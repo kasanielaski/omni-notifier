@@ -7,9 +7,15 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "clean": "rimraf build",
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "typescript": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "rimraf": "^6.1.3"
   }
 }
