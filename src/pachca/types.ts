@@ -6,7 +6,7 @@ export interface PachkaNotifierConfig {
 }
 
 export interface SendMessageOptions {
-  entityType?: "user" | "discussion";
+  entityType?: 'user' | 'discussion';
   entityId?: number;
   parentMessageId?: number;
   groupName?: string; // Название группы для группировки сообщений в треды
@@ -29,7 +29,7 @@ export interface WebhookMessage {
 
 export interface PachkaApiMessageRequest {
   message: {
-    entity_type: "user" | "discussion" | "thread";
+    entity_type: 'user' | 'discussion' | 'thread';
     entity_id: number;
     content: string;
     parent_message_id?: number;

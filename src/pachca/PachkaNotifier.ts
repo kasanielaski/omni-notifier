@@ -1,6 +1,6 @@
-import * as crypto from "crypto";
+import * as crypto from 'crypto';
 
-import { getMessagePrefix } from "./index";
+import { getMessagePrefix } from './index';
 import {
   PachkaNotifierConfig,
   SendMessageOptions,
@@ -12,9 +12,9 @@ import {
   AddReactionRequest,
   CreateThreadResponse,
   PachkaThread,
-} from "./types";
+} from './types';
 
-const PACHKA_API_BASE_URL = "https://api.pachca.com/api/shared/v1";
+const PACHKA_API_BASE_URL = 'https://api.pachca.com/api/shared/v1';
 const REQUEST_TIMEOUT_MS = 10000;
 
 /**
@@ -27,7 +27,7 @@ export class PachkaApiError extends Error {
     public readonly url: string,
   ) {
     super(`Pachca API ${status} на ${url}: ${body}`);
-    this.name = "PachkaApiError";
+    this.name = 'PachkaApiError';
   }
 }
 
@@ -54,10 +54,10 @@ export class PachkaNotifier {
   private async request<T>(
     path: string,
     init: {
-      method: "GET" | "POST";
+      method: 'GET' | 'POST';
       json?: unknown;
       query?: Record<string, string | number>;
-    } = { method: "GET" },
+    } = { method: 'GET' },
   ): Promise<T> {
     const url = new URL(`${PACHKA_API_BASE_URL}${path}`);
     if (init.query) {
@@ -70,14 +70,14 @@ export class PachkaNotifier {
       method: init.method,
       headers: {
         Authorization: `Bearer ${this.config.accessToken}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: init.json !== undefined ? JSON.stringify(init.json) : undefined,
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
-      const body = await response.text().catch(() => "");
+      const body = await response.text().catch(() => '');
       throw new PachkaApiError(response.status, body, url.toString());
     }
 
@@ -97,9 +97,9 @@ export class PachkaNotifier {
     const page = options?.page || 1;
 
     const response = await this.request<PachkaApiMessagesResponse>(
-      "/messages",
+      '/messages',
       {
-        method: "GET",
+        method: 'GET',
         query: { chat_id: chatId, per, page },
       },
     );
@@ -116,7 +116,7 @@ export class PachkaNotifier {
     };
 
     await this.request<void>(`/messages/${messageId}/reactions`, {
-      method: "POST",
+      method: 'POST',
       json: requestBody,
     });
   }
@@ -129,7 +129,7 @@ export class PachkaNotifier {
     const response = await this.request<CreateThreadResponse>(
       `/messages/${messageId}/thread`,
       {
-        method: "POST",
+        method: 'POST',
       },
     );
 
@@ -178,7 +178,7 @@ export class PachkaNotifier {
       let finalContentOrOptions = contentOrOptions;
 
       if (prefix) {
-        if (typeof contentOrOptions === "string") {
+        if (typeof contentOrOptions === 'string') {
           // Вариант 1: sendMessage(groupName, content, options?)
           // Префикс добавляется к groupName
           finalGroupNameOrContent = `${prefix} ${groupNameOrContent}`;
@@ -194,7 +194,7 @@ export class PachkaNotifier {
         setTimeout(
           () =>
             reject(
-              new Error("Timeout: отправка сообщения заняла более 1 секунды"),
+              new Error('Timeout: отправка сообщения заняла более 1 секунды'),
             ),
           1000,
         );
@@ -228,7 +228,7 @@ export class PachkaNotifier {
     let content: string;
     let finalOptions: SendMessageOptions | undefined;
 
-    if (typeof contentOrOptions === "string") {
+    if (typeof contentOrOptions === 'string') {
       // Вариант 1: sendMessage(groupName, content, options?)
       groupName = groupNameOrContent;
       content = contentOrOptions;
@@ -239,12 +239,12 @@ export class PachkaNotifier {
       finalOptions = contentOrOptions as SendMessageOptions | undefined;
     }
 
-    const entityType = finalOptions?.entityType || "discussion";
+    const entityType = finalOptions?.entityType || 'discussion';
     // Используем options.chatId если указан, иначе this.config.chatId (дефолт 33533150)
     const chatIdForDiscussion = finalOptions?.chatId ?? this.config.chatId;
     const entityId =
       finalOptions?.entityId ??
-      (entityType === "user" ? this.config.userId : chatIdForDiscussion);
+      (entityType === 'user' ? this.config.userId : chatIdForDiscussion);
 
     // Форматирование сообщения: если groupName указан, форматируем как "`{groupName}`: {content}"
     const formattedContent = groupName
@@ -252,7 +252,7 @@ export class PachkaNotifier {
       : content;
 
     // Проверка дубликатов только для сообщений в чаты (discussion) и только если groupName указан
-    if (entityType === "discussion" && groupName !== undefined) {
+    if (entityType === 'discussion' && groupName !== undefined) {
       const chatId = chatIdForDiscussion;
 
       try {
@@ -300,14 +300,14 @@ export class PachkaNotifier {
             // Отправляем сообщение в тред (с форматированием)
             const threadRequestBody: PachkaApiMessageRequest = {
               message: {
-                entity_type: "thread",
+                entity_type: 'thread',
                 entity_id: thread.id,
                 content: formattedContent,
               },
             };
 
-            await this.request<void>("/messages", {
-              method: "POST",
+            await this.request<void>('/messages', {
+              method: 'POST',
               json: threadRequestBody,
             });
 
@@ -334,8 +334,8 @@ export class PachkaNotifier {
       requestBody.message.parent_message_id = finalOptions.parentMessageId;
     }
 
-    await this.request<void>("/messages", {
-      method: "POST",
+    await this.request<void>('/messages', {
+      method: 'POST',
       json: requestBody,
     });
   }
@@ -354,9 +354,9 @@ export class PachkaNotifier {
 
     // Проверка подписи
     const expectedSignature = crypto
-      .createHmac("sha256", this.config.webhookSecret)
+      .createHmac('sha256', this.config.webhookSecret)
       .update(rawBody)
-      .digest("hex");
+      .digest('hex');
 
     if (expectedSignature !== signature) {
       return false;
@@ -380,17 +380,17 @@ export class PachkaNotifier {
    * Обработка входящего webhook'а от Пачки
    */
   handleWebhook(body: any): WebhookMessage | null {
-    if (!body || typeof body !== "object") {
+    if (!body || typeof body !== 'object') {
       return null;
     }
 
     // Проверяем, что это сообщение
-    if (body.type === "message" && body.event === "new") {
+    if (body.type === 'message' && body.event === 'new') {
       return {
         event: body.event,
         type: body.type,
         id: body.id,
-        content: body.content || "",
+        content: body.content || '',
         user_id: body.user_id,
         chat_id: body.chat_id,
         entity_type: body.entity_type,

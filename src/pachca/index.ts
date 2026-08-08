@@ -1,5 +1,5 @@
-import { PachkaNotifier } from "./PachkaNotifier";
-import type { PachkaNotifierConfig } from "./types";
+import { PachkaNotifier } from './PachkaNotifier';
+import type { PachkaNotifierConfig } from './types';
 
 // Глобальный инстанс
 export let pachka: PachkaNotifier | null = null;
@@ -12,9 +12,9 @@ let messagePrefix: string | null = null;
 
 // Дефолтные значения токенов
 const DEFAULT_CONFIG: Partial<PachkaNotifierConfig> = {
-  accessToken: "",
-  userId: 123456,
-  chatId: 123456,
+  accessToken: '',
+  userId: 0,
+  chatId: 0,
 };
 
 /**
@@ -41,8 +41,7 @@ export function pachkaInit({
   pachkaChatId,
   pachkaWebhookSecret,
 }: PachkaInitOptions = {}): void {
-  const enableMessages = pachkaEnableMessages ?? false;
-  messagesEnabled = enableMessages;
+  messagesEnabled = pachkaEnableMessages;
   messagePrefix = pachkaPrefix ?? null;
 
   const finalConfig: PachkaNotifierConfig = {
@@ -59,20 +58,14 @@ export function pachkaInit({
   }
 }
 
-/**
- * Получить текущий префикс сообщений
- */
 export function getMessagePrefix(): string | null {
   return messagePrefix;
 }
 
-/**
- * Проверка, включена ли отправка сообщений
- */
 export function isMessagesEnabled(): boolean {
   return messagesEnabled;
 }
 
 // Экспорт типов и класса
-export { PachkaNotifier } from "./PachkaNotifier";
-export * from "./types";
+export { PachkaNotifier } from './PachkaNotifier';
+export * from './types';
