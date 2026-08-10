@@ -1,4 +1,5 @@
 import { TelegramNotifier } from './TelegramNotifier';
+import { ITelegramConfig } from './types';
 
 export let telegram: TelegramNotifier | null = null;
 
@@ -11,26 +12,20 @@ let messagePrefix: string | null = null;
 const DEFAULT_CONFIG: ITelegramConfig = {
   telegramToken: '',
   telegramEnableMessages: false,
-  telegramPrefix: '',
+  telegramChatID: 0,
 };
 
-export interface ITelegramConfig {
-  telegramToken?: string;
-  telegramEnableMessages?: boolean;
-  telegramPrefix?: string;
-}
 
 export function telegramInit({
   telegramToken,
-  telegramPrefix,
+  telegramChatID,
   telegramEnableMessages = false,
 }: ITelegramConfig = {}): void {
   messagesEnabled = telegramEnableMessages;
-  messagePrefix = telegramPrefix ?? null;
 
   const finalConfig: ITelegramConfig = {
     telegramToken: telegramToken ?? DEFAULT_CONFIG.telegramToken,
-    telegramPrefix: telegramPrefix ?? DEFAULT_CONFIG.telegramPrefix,
+    telegramChatID: telegramChatID ?? DEFAULT_CONFIG.telegramChatID,
   };
 
   try {
@@ -48,5 +43,5 @@ export function isMessagesEnabled(): boolean {
   return messagesEnabled;
 }
 
-export { TelegramNotifier } from './TelegramNotifier';
+export { TelegramNotifier, TelegramApiError } from './TelegramNotifier';
 export * from './types';

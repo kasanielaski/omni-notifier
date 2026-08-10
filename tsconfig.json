@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "commonjs",
     "types": ["node"],
     "strict": true,
@@ -13,6 +13,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "index.ts"],
   "exclude": ["node_modules", "build"]
 }
