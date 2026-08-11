@@ -2,40 +2,40 @@ import * as crypto from 'crypto';
 
 import { getMessagePrefix } from './index';
 import {
-  PachkaNotifierConfig,
+  IPachcaNotifierConfig,
   SendMessageOptions,
   WebhookMessage,
-  PachkaApiMessageRequest,
+  PachcaApiMessageRequest,
   GetMessagesOptions,
-  PachkaMessage,
-  PachkaApiMessagesResponse,
+  PachcaMessage,
+  PachcaApiMessagesResponse,
   AddReactionRequest,
   CreateThreadResponse,
-  PachkaThread,
+  PachcaThread,
 } from './types';
 
-const PACHKA_API_BASE_URL = 'https://api.pachca.com/api/shared/v1';
+const PACHCA_API_BASE_URL = 'https://api.pachca.com/api/shared/v1';
 const REQUEST_TIMEOUT_MS = 10000;
 
 /**
  * Ошибка HTTP-запроса к API Пачки
  */
-export class PachkaApiError extends Error {
+class PachcaApiError extends Error {
   constructor(
     public readonly status: number,
     public readonly body: string,
     public readonly url: string,
   ) {
     super(`Pachca API ${status} на ${url}: ${body}`);
-    this.name = 'PachkaApiError';
+    this.name = 'PachcaApiError';
   }
 }
 
-export class PachkaNotifier {
-  private config: PachkaNotifierConfig;
+export class PachcaNotifier {
+  private config: IPachcaNotifierConfig;
   private messagesEnabled: boolean;
 
-  constructor(config: PachkaNotifierConfig, messagesEnabled: boolean = false) {
+  constructor(config: IPachcaNotifierConfig, messagesEnabled: boolean = false) {
     this.config = config;
     this.messagesEnabled = messagesEnabled;
   }
@@ -49,7 +49,7 @@ export class PachkaNotifier {
 
   /**
    * Общий HTTP-хелпер над нативным fetch.
-   * Бросает PachkaApiError на не-2xx, TimeoutError при превышении таймаута.
+   * Бросает PachcaApiError на не-2xx, TimeoutError при превышении таймаута.
    */
   private async request<T>(
     path: string,
@@ -59,7 +59,7 @@ export class PachkaNotifier {
       query?: Record<string, string | number>;
     } = { method: 'GET' },
   ): Promise<T> {
-    const url = new URL(`${PACHKA_API_BASE_URL}${path}`);
+    const url = new URL(`${PACHCA_API_BASE_URL}${path}`);
     if (init.query) {
       for (const [key, value] of Object.entries(init.query)) {
         url.searchParams.set(key, String(value));
@@ -78,7 +78,7 @@ export class PachkaNotifier {
 
     if (!response.ok) {
       const body = await response.text().catch(() => '');
-      throw new PachkaApiError(response.status, body, url.toString());
+      throw new PachcaApiError(response.status, body, url.toString());
     }
 
     // 204 и пустое тело — валидный ответ для методов без полезной нагрузки
@@ -92,11 +92,11 @@ export class PachkaNotifier {
   async getMessages(
     chatId: number,
     options?: GetMessagesOptions,
-  ): Promise<PachkaMessage[]> {
+  ): Promise<PachcaMessage[]> {
     const per = options?.per || 50;
     const page = options?.page || 1;
 
-    const response = await this.request<PachkaApiMessagesResponse>(
+    const response = await this.request<PachcaApiMessagesResponse>(
       '/messages',
       {
         method: 'GET',
@@ -125,7 +125,7 @@ export class PachkaNotifier {
    * Создание треда к сообщению
    * Если тред уже существует, API вернет информацию о существующем треде
    */
-  async createThread(messageId: number): Promise<PachkaThread> {
+  async createThread(messageId: number): Promise<PachcaThread> {
     const response = await this.request<CreateThreadResponse>(
       `/messages/${messageId}/thread`,
       {
@@ -283,7 +283,7 @@ export class PachkaNotifier {
         if (duplicate) {
           // Найден дубликат - создаем тред и отправляем сообщение туда
           try {
-            let thread: PachkaThread;
+            let thread: PachcaThread;
 
             // Проверяем, есть ли уже тред у сообщения
             if (duplicate.thread && duplicate.thread.id) {
@@ -298,7 +298,7 @@ export class PachkaNotifier {
             }
 
             // Отправляем сообщение в тред (с форматированием)
-            const threadRequestBody: PachkaApiMessageRequest = {
+            const threadRequestBody: PachcaApiMessageRequest = {
               message: {
                 entity_type: 'thread',
                 entity_id: thread.id,
@@ -322,7 +322,7 @@ export class PachkaNotifier {
     }
 
     // Отправляем новое сообщение (если не найден дубликат, произошла ошибка, или groupName не указан)
-    const requestBody: PachkaApiMessageRequest = {
+    const requestBody: PachcaApiMessageRequest = {
       message: {
         entity_type: entityType,
         entity_id: entityId,

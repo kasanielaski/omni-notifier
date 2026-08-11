@@ -3,10 +3,7 @@ import { ITelegramConfig } from './types';
 
 export let telegram: TelegramNotifier | null = null;
 
-// Флаг включения отправки сообщений
 let messagesEnabled = false;
-
-// Префикс для сообщений
 let messagePrefix: string | null = null;
 
 const DEFAULT_CONFIG: ITelegramConfig = {
@@ -43,5 +40,5 @@ export function isMessagesEnabled(): boolean {
   return messagesEnabled;
 }
 
-export { TelegramNotifier, TelegramApiError } from './TelegramNotifier';
+export { TelegramNotifier } from './TelegramNotifier';
 export * from './types';

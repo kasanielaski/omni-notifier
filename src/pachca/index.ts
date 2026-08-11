@@ -1,8 +1,8 @@
-import { PachkaNotifier } from './PachkaNotifier';
-import type { PachkaNotifierConfig } from './types';
+import { PachcaNotifier } from './PachcaNotifier';
+import type { IPachcaNotifierConfig } from './types';
 
 // Глобальный инстанс
-export let pachka: PachkaNotifier | null = null;
+export let pachca: PachcaNotifier | null = null;
 
 // Флаг включения отправки сообщений
 let messagesEnabled = false;
@@ -11,50 +11,50 @@ let messagesEnabled = false;
 let messagePrefix: string | null = null;
 
 // Дефолтные значения токенов
-const DEFAULT_CONFIG: Partial<PachkaNotifierConfig> = {
+const DEFAULT_CONFIG: Partial<IPachcaNotifierConfig> = {
   accessToken: '',
   userId: 0,
   chatId: 0,
 };
 
 /**
- * Параметры инициализации PachkaNotifier
+ * Параметры инициализации PachcaNotifier
  */
-export interface PachkaInitOptions {
-  pachkaAccessToken?: string;
-  pachkaUserId?: number;
-  pachkaChatId?: number;
-  pachkaWebhookSecret?: string;
-  pachkaEnableMessages?: boolean; // Включить отправку сообщений (по умолчанию false - библиотека молчаливая)
-  pachkaPrefix?: string; // Префикс для всех сообщений (добавляется к группе или к сообщению)
+export interface PachcaInitOptions {
+  pachcaAccessToken?: string;
+  pachcaUserId?: number;
+  pachcaChatId?: number;
+  pachcaWebhookSecret?: string;
+  pachcaEnableMessages?: boolean; // Включить отправку сообщений (по умолчанию false - библиотека молчаливая)
+  pachcaPrefix?: string; // Префикс для всех сообщений (добавляется к группе или к сообщению)
 }
 
 /**
- * Инициализация PachkaNotifier
+ * Инициализация PachcaNotifier
  * @param options - опциональные параметры для переопределения дефолтных значений
  */
-export function pachkaInit({
-  pachkaEnableMessages = false,
-  pachkaPrefix,
-  pachkaAccessToken,
-  pachkaUserId,
-  pachkaChatId,
-  pachkaWebhookSecret,
-}: PachkaInitOptions = {}): void {
-  messagesEnabled = pachkaEnableMessages;
-  messagePrefix = pachkaPrefix ?? null;
+export function pachcaInit({
+  pachcaEnableMessages = false,
+  pachcaPrefix,
+  pachcaAccessToken,
+  pachcaUserId,
+  pachcaChatId,
+  pachcaWebhookSecret,
+}: PachcaInitOptions = {}): void {
+  messagesEnabled = pachcaEnableMessages;
+  messagePrefix = pachcaPrefix ?? null;
 
-  const finalConfig: PachkaNotifierConfig = {
-    accessToken: pachkaAccessToken ?? DEFAULT_CONFIG.accessToken!,
-    userId: pachkaUserId ?? DEFAULT_CONFIG.userId!,
-    chatId: pachkaChatId ?? DEFAULT_CONFIG.chatId!,
-    webhookSecret: pachkaWebhookSecret,
+  const finalConfig: IPachcaNotifierConfig = {
+    accessToken: pachcaAccessToken ?? DEFAULT_CONFIG.accessToken!,
+    userId: pachcaUserId ?? DEFAULT_CONFIG.userId!,
+    chatId: pachcaChatId ?? DEFAULT_CONFIG.chatId!,
+    webhookSecret: pachcaWebhookSecret,
   };
 
   try {
-    pachka = new PachkaNotifier(finalConfig, pachkaEnableMessages);
+    pachca = new PachcaNotifier(finalConfig, pachcaEnableMessages);
   } catch (error) {
-    pachka = null;
+    pachca = null;
   }
 }
 
@@ -67,5 +67,5 @@ export function isMessagesEnabled(): boolean {
 }
 
 // Экспорт типов и класса
-export { PachkaNotifier } from './PachkaNotifier';
+export { PachcaNotifier } from './PachcaNotifier';
 export * from './types';

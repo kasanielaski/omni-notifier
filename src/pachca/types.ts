@@ -1,4 +1,4 @@
-export interface PachkaNotifierConfig {
+export interface IPachcaNotifierConfig {
   accessToken: string;
   userId: number;
   chatId: number;
@@ -27,7 +27,7 @@ export interface WebhookMessage {
   created_at: string;
 }
 
-export interface PachkaApiMessageRequest {
+export interface PachcaApiMessageRequest {
   message: {
     entity_type: 'user' | 'discussion' | 'thread';
     entity_id: number;
@@ -36,7 +36,7 @@ export interface PachkaApiMessageRequest {
   };
 }
 
-export interface PachkaApiMessageResponse {
+export interface PachcaApiMessageResponse {
   data: {
     id: number;
     entity_type: string;
@@ -54,7 +54,7 @@ export interface GetMessagesOptions {
   page?: number;
 }
 
-export interface PachkaMessage {
+export interface PachcaMessage {
   id: number;
   entity_type: string;
   entity_id: number;
@@ -72,15 +72,15 @@ export interface PachkaMessage {
   parent_message_id?: number | null;
 }
 
-export interface PachkaApiMessagesResponse {
-  data: PachkaMessage[];
+export interface PachcaApiMessagesResponse {
+  data: PachcaMessage[];
 }
 
 export interface AddReactionRequest {
   code: string;
 }
 
-export interface PachkaThread {
+export interface PachcaThread {
   id: number;
   chat_id: number;
   message_id?: number;
@@ -89,5 +89,5 @@ export interface PachkaThread {
 }
 
 export interface CreateThreadResponse {
-  data: PachkaThread;
+  data: PachcaThread;
 }
