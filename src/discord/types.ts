@@ -1,7 +1,6 @@
 export interface IDiscordConfig {
   discordToken?: string;
   discordEnableMessages?: boolean;
-  /** Snowflake канала. Именно строка: 19-значный id не помещается в number без потери точности */
   discordChatID?: string;
 }
 
